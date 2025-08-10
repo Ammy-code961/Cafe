@@ -1,0 +1,39 @@
+﻿@model decimal
+@{
+    ViewData["Title"] = "Order Confirmation";
+
+    // Safely convert ViewBag.ReusableCup to bool
+    bool reusedCup = false;
+    if (ViewBag.ReusableCup != null)
+    {
+        bool.TryParse(ViewBag.ReusableCup.ToString(), out reusedCup);
+    }
+
+    string paymentMethod = ViewBag.PaymentMethod ?? "Not specified";
+
+    // QR code base64 string from controller
+    string qrImage = ViewBag.QRImage as string;
+}
+
+<div class="text-center mt-5">
+    <h2>Thank you for your order!</h2>
+    <p>Total Paid: <strong>$@Model.ToString("0.00")</strong></p>
+
+    @if (reusedCup)
+    {
+        <p class="text-success">You saved $0.50 for bringing a reusable cup! 🌿</p>
+        <p>You earned <strong>10 eco-points</strong> for your sustainable choice! 🌱</p>
+    }
+
+    <p>Payment Method: <strong>@paymentMethod</strong></p>
+
+    @if (!string.IsNullOrEmpty(qrImage))
+    {
+        <div class="mt-4">
+            <p>Show this QR code during pickup:</p>
+            <img src="@qrImage" alt="Pickup QR Code" style="max-width:200px;" />
+        </div>
+    }
+
+    <a asp-controller="Menu" asp-action="Index" class="btn btn-primary mt-3">Back to Menu</a>
+</div>

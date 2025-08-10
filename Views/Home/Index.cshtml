@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "HOME";
+}
+
+<!-- Birthday Reward Alert -->
+@if (TempData["BirthdayMessage"] != null)
+{
+    <div class="alert alert-success text-center mt-3">
+        @TempData["BirthdayMessage"]
+    </div>
+}
+
+<!-- Hero Section -->
+<div class="hero-section text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 60vh; background-color: #f8f1e4;">
+    <div class="container">
+        <h1 class="display-4 hero-title">CAFE BREW</h1>
+        <p class="lead hero-description">Eco-friendly | Trendy | Delicious Fresh Coffee</p>
+        <div class="hero-buttons mt-4">
+            <a asp-controller="Menu" asp-action="Index" class="btn btn-outline-dark mx-2">View Menu</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-dark mx-2">Login / Register</a>
+        </div>
+    </div>
+</div>
+
+<div class="text-center my-4">
+    <h1>Welcome to Cafe Brew</h1>
+    <i class="fas fa-shopping-cart fa-3x" style="color: brown;"></i>
+</div>
+
+
+<!-- Signature Blends Section -->
+<section class="container py-5">
+    <h2 class="mb-4">Our Signature Blends</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="~/images/Cappuccino.jpeg" class="card-img-top" alt="Cappuccino" style="height: 250px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Cappuccino</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="~/images/Mocha.jpg" class="card-img-top" alt="Mocha" style="height: 250px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Mocha</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <img src="~/images/espresso.jpg" class="card-img-top" alt="Espresso" style="height: 250px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Espresso</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-success');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 5000);
+    </script>
+}

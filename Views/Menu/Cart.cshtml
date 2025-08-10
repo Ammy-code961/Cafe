@@ -1,0 +1,70 @@
+﻿@model List<CafeApp.Models.CartItem>
+@{
+    ViewData["Title"] = "Your Cart";
+    bool isBirthday = TempData["BirthdayDiscount"] != null && (bool)TempData["BirthdayDiscount"];
+}
+
+<h2>Your Cart</h2>
+
+@if (!Model.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Discount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                decimal price = item.Item.Price * item.Quantity;
+
+                if (isBirthday)
+                {
+                    price *= 0.8m; // 20% off
+                }
+
+                <tr>
+                    <td>@item.Item.Name</td>
+                    <td>@item.Quantity</td>
+                    <td>$@item.Item.Price</td>
+                    <td>@(isBirthday ? "20% (Birthday)" : $"{item.Item.DiscountPercent}%")</td>
+                    <td>$@price.ToString("0.00")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-action="Checkout" method="post">
+        <div class="mb-3">
+            <label>Select Payment Method:</label>
+            <select name="paymentMethod" class="form-select" required>
+                <option value="">--Choose--</option>
+                <option value="Card">Pay with Bank Card</option>
+                <option value="Cash">Pay with Cash</option>
+            </select>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="reusableCup" value="true" id="reusableCupCheck">
+            <input type="hidden" name="reusableCup" value="false" />
+            <label class="form-check-label" for="reusableCupCheck">
+                I brought a reusable cup (get $0.50 discount)
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Proceed to Pay</button>
+    </form>
+
+    <div class="mt-4">
+        <a asp-controller="Menu" asp-action="Index" class="btn btn-secondary">&larr; Back to Menu</a>
+    </div>
+}

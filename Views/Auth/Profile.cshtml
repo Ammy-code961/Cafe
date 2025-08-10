@@ -1,0 +1,14 @@
+﻿@model CafeApp.Models.User
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h2>Your Profile</h2>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <p><strong>Username:</strong> @Model.Username</p>
+        <p><strong>Date of birth:</strong> @Model.DateOfBirth.ToString("yyyy-MM-dd")</p>
+        <!-- Add other fields if needed -->
+    </div>
+</div>

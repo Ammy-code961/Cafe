@@ -1,0 +1,61 @@
+﻿@model List<CafeApp.Models.MenuItem>
+@{
+    ViewData["Title"] = "Our Menu";
+}
+
+<div class="container py-4">
+    <h2 class="text-center mb-4">Our Menu</h2>
+
+    <!-- 🌿 Filter Tabs -->
+    <div class="text-center mb-4">
+        <a asp-action="Index" asp-route-category="All" class="btn btn-outline-dark m-1">All</a>
+        <a asp-action="Index" asp-route-category="Coffee" class="btn btn-outline-dark m-1">Coffee</a>
+        <a asp-action="Index" asp-route-category="Food" class="btn btn-outline-dark m-1">Food</a>
+        <a asp-action="Index" asp-route-category="Plant-Based" class="btn btn-outline-dark m-1">Plant-Based</a>
+        <a asp-action="Index" asp-route-category="New Arrivals" class="btn btn-outline-dark m-1">New Arrivals</a>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@item.ImagePath" class="card-img-top" alt="@item.Name" style="height:220px; object-fit:cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+
+                        <!-- 🌟 Trending / Eco-Friendly Badges -->
+                        @if (item.IsTrending)
+                        {
+                            <span class="badge bg-danger me-1">Trending</span>
+                        }
+                        @if (item.IsEcoFriendly)
+                        {
+                            <span class="badge bg-success">Eco-Friendly</span>
+                        }
+
+                        <p class="card-text mt-2">Category: <strong>@item.Category</strong></p>
+                        <p class="card-text">
+                            Price:
+                            <strong>NZD @(item.Price - (item.Price * item.DiscountPercent / 100))</strong>
+                            @if (item.DiscountPercent > 0)
+                            {
+                                <span class="text-muted text-decoration-line-through ms-2">NZD @item.Price</span>
+                                <span class="badge bg-success ms-2">-@item.DiscountPercent%</span>
+                            }
+                        </p>
+
+                        <!-- 🛒 Add to Cart Form -->
+                        <form asp-action="AddToCart" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <div class="input-group mb-2">
+                                <input type="number" name="quantity" value="1" class="form-control" min="1" />
+                                <button type="submit" class="btn btn-outline-primary">Add to Cart</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

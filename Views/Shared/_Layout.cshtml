@@ -1,0 +1,157 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CafeBrew</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        main {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">CafeBrew</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Menu" asp-action="Index">Menu</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">About Us</a></li>
+						<li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <li class="nav-item nav-link">Welcome, <strong>@User.Identity.Name</strong></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Auth" asp-action="Profile">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Register">Register</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="container pb-4">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-light text-center text-muted py-3 mt-auto">
+        <div class="container">
+            © 2025 - CafeBrew - All rights reserved
+            <a href="https://instagram.com/CAFEBREW6" target="_blank" class="text-dark ms-3">
+                <i class="bi bi-instagram" style="font-size:1.25rem;"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Chatbot button + panel -->
+    <button id="chatbot-button" class="btn" title="Chat" style="position:fixed; right:20px; bottom:90px; background:#a37048; color:white; border-radius:50%; width:54px; height:54px;">
+        <i class="bi bi-chat-dots"></i>
+    </button>
+
+    <div id="chatbot-container" style="display:none; position:fixed; right:20px; bottom:150px; width:320px; height:420px; z-index:1050; box-shadow:0 6px 20px rgba(0,0,0,.15); border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="background:#3c2f2f; color:#fff; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+            <strong>CafeBrew Chat</strong>
+            <button id="chat-close" class="btn btn-sm btn-light">X</button>
+        </div>
+        <div id="chatbot-messages" style="padding:10px; height:320px; overflow:auto; background:#fafafa;"></div>
+        <div style="padding:8px;border-top:1px solid #eee;">
+            <input id="chat-input" class="form-control" placeholder="Type a message..." />
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function(){
+            const btn = document.getElementById('chatbot-button');
+            const panel = document.getElementById('chatbot-container');
+            const closeBtn = document.getElementById('chat-close');
+            const input = document.getElementById('chat-input');
+            const messages = document.getElementById('chatbot-messages');
+
+            // Show/hide chatbot
+            btn.addEventListener('click', () => panel.style.display = panel.style.display === 'none' ? 'block' : 'none');
+            closeBtn.addEventListener('click', () => panel.style.display = 'none');
+
+            // Add greeting
+            function addMessage(sender, text, color = '#000') {
+                const msg = document.createElement('div');
+                msg.textContent = sender + ': ' + text;
+                msg.style.color = color;
+                messages.appendChild(msg);
+                messages.scrollTop = messages.scrollHeight;
+            }
+            addMessage('Bot', 'Hello! How can I help you today?', '#3c2f2f');
+
+            // Chatbot logic
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && input.value.trim()) {
+                    const userText = input.value.trim();
+                    addMessage('You', userText);
+                    let botReply = '';
+
+                    const lowerText = userText.toLowerCase();
+                    if (lowerText.includes('menu')) {
+                        botReply = 'Our menu includes fresh coffee, teas, pastries, and seasonal specials! Check the Menu page for details.';
+                    } else if (lowerText.includes('reusable') || lowerText.includes('cup')) {
+                        botReply = 'We encourage customers to bring reusable cups! You get a small discount when you do. 🌱';
+                    } else if (lowerText.includes('plant') || lowerText.includes('milk')) {
+                        botReply = 'We offer plant-based options like oat, almond, and soy milk for all drinks.';
+                    } else if (lowerText.includes('instagram')) {
+                        botReply = 'Follow us on Instagram: https://instagram.com/CAFEBREW6 📸';
+                    } else {
+                        botReply = 'I’m here to help with info about our menu, reusable cups, plant-based drinks, or our Instagram page!';
+                    }
+
+                    addMessage('Bot', botReply, '#666');
+                    input.value = '';
+                }
+            });
+        })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
